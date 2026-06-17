@@ -91,20 +91,20 @@ This plan implements the DirectorAI full-stack content automation SaaS platform 
 
 ## Tasks
 
-- [ ] 0.1 Project scaffold and tooling setup
-  - [-] 0.1.1 Initialise Angular 17 SPA under `frontend/` using the Angular CLI (`ng new director-ai-frontend --standalone --routing --style=scss`)
-  - [~] 0.1.2 Configure TypeScript `strict` mode, `paths` aliases (`@/core`, `@/shared`, `@/features`), and `baseUrl` in both `tsconfig.json` files
-  - [~] 0.1.3 Initialise Supabase project locally (`supabase init`) and confirm `supabase start` succeeds; add `supabase/` directory to repo
-  - [~] 0.1.4 Install and configure `vitest` + `@vitest/coverage-v8` as the test runner for Edge Functions; add `vitest.config.ts`
-  - [~] 0.1.5 Install and configure `fast-check@^3.x` for property-based testing; verify import resolves in a sample test file
-  - [~] 0.1.6 Install frontend dev dependencies: `@testing-library/angular`, `msw@^2.x`, `jest-environment-jsdom`; wire `jest.config.ts`
-  - [~] 0.1.7 Add `eslint` + `@angular-eslint` + `prettier` configs; add lint and format scripts to `package.json`
-  - [~] 0.1.8 Create `.env.example` listing all required environment variables (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PROFESSIONAL`, `STRIPE_PRICE_AGENCY`); confirm `.env` is in `.gitignore`
-  - [~] 0.1.9 Create shared TypeScript type barrel `packages/types/index.ts` exporting all interfaces from the design document (`ScheduledPost`, `PublishResult`, `Asset`, `AuthResult`, etc.)
+- [x] 0.1 Project scaffold and tooling setup
+  - [x] 0.1.1 Initialise Angular 17 SPA under `frontend/` using the Angular CLI (`ng new director-ai-frontend --standalone --routing --style=scss`)
+  - [x] 0.1.2 Configure TypeScript `strict` mode, `paths` aliases (`@/core`, `@/shared`, `@/features`), and `baseUrl` in both `tsconfig.json` files
+  - [x] 0.1.3 Initialise Supabase project locally (`supabase init`) and confirm `supabase start` succeeds; add `supabase/` directory to repo
+  - [x] 0.1.4 Install and configure `vitest` + `@vitest/coverage-v8` as the test runner for Edge Functions; add `vitest.config.ts`
+  - [x] 0.1.5 Install and configure `fast-check@^3.x` for property-based testing; verify import resolves in a sample test file
+  - [x] 0.1.6 Install frontend dev dependencies: `@testing-library/angular`, `msw@^2.x`, `jest-environment-jsdom`; wire `jest.config.ts`
+  - [x] 0.1.7 Add `eslint` + `@angular-eslint` + `prettier` configs; add lint and format scripts to `package.json`
+  - [x] 0.1.8 Create `.env.example` listing all required environment variables (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PROFESSIONAL`, `STRIPE_PRICE_AGENCY`); confirm `.env` is in `.gitignore`
+  - [x] 0.1.9 Create shared TypeScript type barrel `packages/types/index.ts` exporting all interfaces from the design document (`ScheduledPost`, `PublishResult`, `Asset`, `AuthResult`, etc.)
 
 
 - [ ] 1.1 Database schema and migrations
-  - [~] 1.1.1 Create migration `001_create_users_profile.sql`: table `users_profile` with columns `id UUID PK FK auth.users`, `email TEXT`, `display_name TEXT`, `avatar_url TEXT`, `timezone TEXT NOT NULL DEFAULT 'UTC'`, `plan_id TEXT NOT NULL DEFAULT 'starter'`, `onboarding_completed BOOLEAN DEFAULT FALSE`, `created_at TIMESTAMPTZ DEFAULT now()`, `updated_at TIMESTAMPTZ DEFAULT now()`
+  - [-] 1.1.1 Create migration `001_create_users_profile.sql`: table `users_profile` with columns `id UUID PK FK auth.users`, `email TEXT`, `display_name TEXT`, `avatar_url TEXT`, `timezone TEXT NOT NULL DEFAULT 'UTC'`, `plan_id TEXT NOT NULL DEFAULT 'starter'`, `onboarding_completed BOOLEAN DEFAULT FALSE`, `created_at TIMESTAMPTZ DEFAULT now()`, `updated_at TIMESTAMPTZ DEFAULT now()`
   - [~] 1.1.2 Create migration `002_create_channels.sql`: table `channels` with columns `id UUID PK`, `user_id UUID FK users_profile.id`, `platform TEXT NOT NULL`, `name TEXT NOT NULL`, `channel_identifier TEXT NOT NULL`, `is_active BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ DEFAULT now()`; add unique constraint on `(user_id, platform, channel_identifier)`
   - [~] 1.1.3 Create migration `003_create_assets.sql`: table `assets` with columns `id UUID PK`, `user_id UUID FK`, `filename TEXT`, `mime_type TEXT`, `size_bytes BIGINT`, `storage_path TEXT`, `folder TEXT DEFAULT '/'`, `tags TEXT[]`, `source TEXT CHECK IN ('user_upload','ai_generated')`, `generation_prompt TEXT`, `ai_model TEXT`, `created_at TIMESTAMPTZ DEFAULT now()`
   - [~] 1.1.4 Create migration `004_create_recurrence_rules.sql`: table `recurrence_rules` with columns `id UUID PK`, `user_id UUID FK`, `frequency TEXT CHECK IN ('daily','weekly','monthly')`, `interval INTEGER DEFAULT 1`, `days_of_week INTEGER[]`, `end_date TIMESTAMPTZ`, `max_occurrences INTEGER`, `created_at TIMESTAMPTZ DEFAULT now()`
