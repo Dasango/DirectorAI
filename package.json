@@ -1,0 +1,27 @@
+{
+  "name": "directorai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dasango/DirectorAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Dasango/DirectorAI/issues"
+  },
+  "homepage": "https://github.com/Dasango/DirectorAI#readme",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
+    "fast-check": "^3.23.2",
+    "vitest": "^4.1.9"
+  }
+}
