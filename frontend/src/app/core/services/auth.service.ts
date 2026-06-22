@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, AuthError, User, Session } from '@supabase/supabase-js';
+import { SupabaseClient, User, Session, AuthError } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-// Staging configuration fallback
-const SUPABASE_URL = 'https://dnrbgoxvxkiczjtpdevu.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucmJnb3h2eGtpY3pqdHBkZXZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDM1NzcsImV4cCI6MjA5NzMxOTU3N30.OMAjndlkrYZcU9dkBYOyO8UzW3CqmPpgGFbk5qXG-EA';
+type OAuthProvider = 'google' | 'github';
 
 interface AuthResult {
   user: User | null;
   session: Session | null;
   error: { message: string; status?: number } | null;
 }
-
-type OAuthProvider = 'google' | 'github' | 'email';
 
 type AuthEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'PASSWORD_RECOVERY' | 'USER_UPDATED';
 
@@ -24,50 +20,35 @@ interface AuthSubscription {
   providedIn: 'root'
 })
 export class AngularAuthService {
-  private supabase: SupabaseClient;
   private authStateSubject = new BehaviorSubject<Session | null>(null);
 
   public authState$: Observable<Session | null> = this.authStateSubject.asObservable();
 
-  constructor() {
-    console.log('Initializing AngularAuthService...');
-    this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true
-      }
-    });
-    console.log('Supabase client created');
-
+  constructor(private supabase: SupabaseClient) {
     this.initSession();
 
-    this.supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event, session);
+    this.supabase.auth.onAuthStateChange((_event, session) => {
       this.authStateSubject.next(session);
     });
   }
 
   private async initSession() {
     try {
-      console.log('Getting initial session...');
       const { data: { session }, error } = await this.supabase.auth.getSession();
       if (error) {
-        console.error('Error getting session:', error);
+        // Silent - session init failure
       }
-      console.log('Initial session:', session);
       this.authStateSubject.next(session);
-    } catch (e) {
-      console.error('Failed to retrieve initial session:', e);
+    } catch {
+      // Silent - session init failure
     }
   }
 
   async signUp(email: string, password: string): Promise<AuthResult> {
-    console.log('Signing up with email:', email);
     const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
     });
-    console.log('Sign up response:', data, error);
     return {
       user: data.user,
       session: data.session,
@@ -76,12 +57,10 @@ export class AngularAuthService {
   }
 
   async signIn(email: string, password: string): Promise<AuthResult> {
-    console.log('Signing in with email:', email);
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email,
       password,
     });
-    console.log('Sign in response:', data, error);
     return {
       user: data.user,
       session: data.session,
@@ -90,7 +69,6 @@ export class AngularAuthService {
   }
 
   async signInWithOAuth(provider: OAuthProvider): Promise<void> {
-    console.log('Signing in with OAuth:', provider);
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider,
     });

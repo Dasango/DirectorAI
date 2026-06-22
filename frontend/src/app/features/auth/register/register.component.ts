@@ -115,30 +115,22 @@ export class RegisterComponent {
     this.successMessage = null;
 
     try {
-      console.log('Starting sign up...');
       const { email, password } = this.registerForm.value;
-      console.log('Calling authService.signUp with email:', email);
-      
       const result = await this.authService.signUp(email, password);
-      console.log('Sign up result:', result);
 
       if (result.error) {
-        console.error('Sign up error:', result.error);
         this.errorMessage = result.error.message;
         return;
       }
 
       if (result.session) {
-        console.log('Session created, navigating...');
         this.router.navigateByUrl('/');
       } else {
         this.successMessage = 'Account created! Please check your email to verify your account.';
       }
-    } catch (err) {
-      console.error('Unexpected error during sign up:', err);
+    } catch {
       this.errorMessage = 'An unexpected error occurred. Please try again.';
     } finally {
-      console.log('Setting isLoading to false');
       this.isLoading = false;
     }
   }
