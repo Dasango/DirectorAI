@@ -1,4 +1,5 @@
-@import './styles/tokens.scss';
+@use "tailwindcss";
+@use './styles/tokens.scss';
 
 * {
   box-sizing: border-box;

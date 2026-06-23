@@ -1,0 +1,157 @@
+<header>
+  <nav [attr.data-state]="menuState() && 'active'" class="fixed z-20 w-full px-2 group">
+    <div [class]="isScrolled()
+      ? 'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12 bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5'
+      : 'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12'">
+      <div class="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+        <div class="flex w-full justify-between lg:w-auto">
+          <a routerLink="/" aria-label="home" class="flex items-center space-x-2">
+            <app-logo />
+          </a>
+          <button (click)="toggleMenu()"
+            [attr.aria-label]="menuState() ? 'Close Menu' : 'Open Menu'"
+            class="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="m-auto size-6 duration-200 group-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0">
+              <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200 group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="absolute inset-0 m-auto hidden size-fit lg:block">
+          <ul class="flex gap-8 text-sm">
+            @for (item of menuItems; track item.name) {
+              <li>
+                <a [href]="item.href" class="text-muted-foreground hover:text-accent-foreground block duration-150">
+                  <span>{{ item.name }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <div [class]="menuState()
+          ? 'bg-background lg:group-data-[state=active]:flex mb-6 block w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent'
+          : 'bg-background lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent'">
+          <div class="lg:hidden">
+            <ul class="space-y-6 text-base">
+              @for (item of menuItems; track item.name) {
+                <li>
+                  <a [href]="item.href" class="text-muted-foreground hover:text-accent-foreground block duration-150">
+                    <span>{{ item.name }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+          <div class="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+            <a routerLink="/auth/login" appButton variant="outline" size="sm" [class.lg-hidden]="isScrolled()">
+              Login
+            </a>
+            <a routerLink="/auth/register" appButton size="sm" [class.lg-hidden]="isScrolled()">
+              Sign Up
+            </a>
+            <a routerLink="/auth/login" appButton size="sm" [class.lg-inline-flex]="isScrolled()" [class.hidden]="!isScrolled()">
+              Get Started
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="overflow-hidden">
+  <div aria-hidden class="z-[2] absolute inset-0 pointer-events-none isolate opacity-50 contain-strict hidden lg:block">
+    <div class="w-[35rem] h-[80rem] -translate-y-[350px] absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]"></div>
+    <div class="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]"></div>
+    <div class="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]"></div>
+  </div>
+
+  <section>
+    <div class="relative pt-24 md:pt-36">
+      <div appAnimatedGroup class="absolute inset-0 -z-20">
+        <img src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
+          alt="background" width="3276" height="4095"
+          class="absolute inset-x-0 top-56 -z-20 hidden lg:top-32 dark:block" />
+      </div>
+
+      <div aria-hidden class="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]"></div>
+
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="text-center sm:mx-auto lg:mr-auto lg:mt-0">
+          <div appAnimatedGroup [staggerDelay]="0.15">
+            <a href="#link"
+              class="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
+              <span class="text-foreground text-sm">Introducing Support for AI Models</span>
+              <span class="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
+              <div class="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
+                <div class="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
+                  <span class="flex size-6"><app-icon-arrow-right /></span>
+                  <span class="flex size-6"><app-icon-arrow-right /></span>
+                </div>
+              </div>
+            </a>
+
+            <h1 class="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+              Modern Solutions for Customer Engagement
+            </h1>
+            <p class="mx-auto mt-8 max-w-2xl text-balance text-lg">
+              Highly customizable components for building modern websites and applications that look and feel the way you mean it.
+            </p>
+          </div>
+
+          <div appAnimatedGroup [staggerDelay]="0.05" [delay]="0.75" class="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
+            <div class="bg-foreground/10 rounded-[14px] border p-0.5">
+              <a routerLink="/auth/login" appButton size="lg" class="rounded-xl px-5 text-base">
+                <span class="text-nowrap">Start Building</span>
+              </a>
+            </div>
+            <a href="#link" appButton size="lg" variant="ghost" class="h-10.5 rounded-xl px-5">
+              <span class="text-nowrap">Request a demo</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div appAnimatedGroup [staggerDelay]="0.05" [delay]="0.75">
+        <div class="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
+          <div aria-hidden class="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"></div>
+          <div class="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
+            <img class="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
+              src="https://tailark.com//_next/image?url=%2Fmail2.png&w=3840&q=75"
+              alt="app screen" width="2700" height="1440" />
+            <img class="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
+              src="https://tailark.com/_next/image?url=%2Fmail2-light.png&w=3840&q=75"
+              alt="app screen" width="2700" height="1440" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-background pb-16 pt-16 md:pb-32">
+    <div class="group relative m-auto max-w-5xl px-6">
+      <div class="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
+        <a href="/" class="block text-sm duration-150 hover:opacity-75">
+          <span>Meet Our Customers</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 inline-block size-3">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </a>
+      </div>
+      <div class="group-hover:blur-xs mx-auto mt-12 grid max-w-2xl grid-cols-4 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14">
+        @for (customer of customers; track customer.alt) {
+          <div class="flex">
+            <img class="mx-auto w-fit dark:invert {{ customer.height }}"
+              [src]="customer.src" [alt]="customer.alt" height="auto" width="auto" />
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</main>
