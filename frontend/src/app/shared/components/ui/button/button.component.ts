@@ -4,12 +4,12 @@ export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' 
 export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 const variantClasses: Record<ButtonVariant, string> = {
-  default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-  outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  ghost: 'hover:bg-accent hover:text-accent-foreground',
-  link: 'text-primary underline-offset-4 hover:underline',
+  default: 'bg-white text-black hover:bg-gray-200',
+  destructive: 'bg-red-600 text-white hover:bg-red-700',
+  outline: 'border border-gray-600 bg-transparent text-white hover:bg-gray-800',
+  secondary: 'bg-gray-800 text-white hover:bg-gray-700',
+  ghost: 'hover:bg-gray-800 hover:text-white',
+  link: 'text-white underline-offset-4 hover:underline',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -19,7 +19,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   icon: 'h-10 w-10',
 };
 
-const baseClasses = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+const baseClasses = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:pointer-events-none disabled:opacity-50';
 
 @Directive({
   selector: '[appButton]',

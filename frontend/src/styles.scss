@@ -43,12 +43,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
-a {
+a:not([appButton]) {
   color: var(--color-signal);
   text-decoration: none;
 }
 
-a:hover {
+a:not([appButton]):hover {
   text-decoration: underline;
 }
 
