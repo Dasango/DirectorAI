@@ -31,12 +31,13 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.9",
-    "@angular/cli": "^21.2.9",
-    "@angular/compiler-cli": "^21.2.0",
-    "@eslint/js": "^10.0.1",
-    "@testing-library/angular": "^19.4.1",
-    "@types/jest": "^30.0.0",
+    "@angular/build": "21.2.9",
+    "@angular/cli": "21.2.9",
+    "@angular/compiler-cli": "21.2.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.61.0",
+    "@testing-library/angular": "19.4.1",
+    "@types/jest": "30.0.0",
     "angular-eslint": "21.4.0",
     "eslint": "^10.3.0",
     "jest": "^30.4.2",
@@ -50,6 +51,6 @@
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.59.2",
-    "vitest": "^4.0.8"
+    "vitest": "4.0.8"
   }
 }

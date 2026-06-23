@@ -221,6 +221,7 @@ export type SupportedMimeType =
   | 'audio/mpeg'
   | 'audio/wav'
   | 'application/pdf'
+  | 'text/plain'
 
 export interface Asset {
   id: string
@@ -251,6 +252,14 @@ export interface AssetFilter {
 // ---------------------------------------------------------------------------
 // Module 2 – Generative AI Orchestrator
 // ---------------------------------------------------------------------------
+
+export interface GenAIService {
+  generateCopy(request: CopyRequest): Promise<GeneratedCopy>
+  generateImage(request: ImageRequest): Promise<GeneratedImage>
+  brainstorm(request: BrainstormRequest): Promise<BrainstormResult>
+  regenerate(assetId: string, instructions?: string): Promise<GeneratedAsset>
+  streamGenerate(request: CopyRequest, onChunk: (chunk: string) => void): Promise<GeneratedCopy>
+}
 
 export type ContentTone =
   | 'professional'
@@ -326,6 +335,14 @@ export interface RetryRecord {
   attemptedAt: Date
   error: PublishError
   outcome: 'success' | 'failed'
+}
+
+export interface RetryEngine {
+  enqueue(post: ScheduledPost, error: PublishError): Promise<void>
+  processQueue(): Promise<void>
+  getRetryStatus(postId: string): Promise<RetryStatus>
+  cancelRetry(postId: string): Promise<void>
+  getRetryHistory(userId: string, limit?: number): Promise<RetryRecord[]>
 }
 
 // ---------------------------------------------------------------------------
@@ -436,6 +453,15 @@ export interface AlertService {
 // ---------------------------------------------------------------------------
 // Module 3 – Billing Service & Feature Gating
 // ---------------------------------------------------------------------------
+
+export interface BillingService {
+  createCheckoutSession(userId: string, planId: PlanId): Promise<CheckoutSession>
+  createPortalSession(userId: string): Promise<PortalSession>
+  getSubscription(userId: string): Promise<Subscription>
+  handleWebhookEvent(payload: string, signature: string): Promise<void>
+  checkFeatureAccess(userId: string, feature: Feature): Promise<boolean>
+  getUsage(userId: string): Promise<UsageSummary>
+}
 
 export type PlanId = 'starter' | 'professional' | 'agency'
 

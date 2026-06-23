@@ -148,104 +148,104 @@ This plan implements the DirectorAI full-stack content automation SaaS platform 
   - [x] 1.4.8 Confirm no Edge Function exposes `getKey` responses to the Angular frontend; return only key names from frontend-facing endpoints — satisfies Req 2.3
   - [x] 1.4.9 Write unit tests: `storeKey` then `getKey` returns correct value; `rotateKey` updates value; `deleteKey` removes from `listKeyNames`; `listKeyNames` is scoped to `userId`
 
-- [ ] 1.5 AssetStorageService implementation
-  - [~] 1.5.1 Create `supabase/functions/_shared/asset-storage.service.ts` implementing the `AssetStorageService` interface
-  - [~] 1.5.2 Implement MIME type validation in `upload`: reject unsupported types with a descriptive error — satisfies Req 3.2
-  - [~] 1.5.3 Implement size-limit validation in `upload`: images ≤ 20 MB, video ≤ 200 MB, audio ≤ 50 MB, PDF ≤ 50 MB; throw `AssetTooLargeError` with `maxBytes` and `actualBytes` on violation — satisfies Req 3.3
-  - [~] 1.5.4 On successful validation, upload file to Supabase Storage bucket `assets/${userId}/`; insert `AssetRecord` into `assets` table; return `Asset` with correct `mimeType`, `sizeBytes`, `userId` — satisfies Req 3.1
-  - [~] 1.5.5 Implement `getSignedUrl(assetId, expiresIn = 3600)`: call Supabase Storage `createSignedUrl`; verify returned URL is non-empty and TTL ≥ `expiresIn` — satisfies Req 3.4
-  - [~] 1.5.6 Implement `listAssets(userId, filter)`: query `assets` WHERE `user_id = userId`; apply filter predicates; never return another user's assets — satisfies Req 3.5, Req 3.8
-  - [~] 1.5.7 Implement `deleteAsset(assetId)`: remove file from Supabase Storage and DELETE row from `assets`; verify asset absent in subsequent `listAssets` — satisfies Req 3.6
-  - [~] 1.5.8 Implement `moveAsset(assetId, targetFolder)`: UPDATE `folder` column; return updated `Asset` — satisfies Req 3.7
-  - [~] 1.5.9 Write `AssetTooLargeError` and `UnsupportedMimeTypeError` classes with appropriate fields
-  - [~] 1.5.10 Write unit tests: supported upload succeeds, unsupported MIME rejected, oversized image rejected, signed URL non-empty, `listAssets` scoped to `userId`, `deleteAsset` removes from list
+- [x] 1.5 AssetStorageService implementation
+  - [x] 1.5.1 Create `supabase/functions/_shared/asset-storage.service.ts` implementing the `AssetStorageService` interface
+  - [x] 1.5.2 Implement MIME type validation in `upload`: reject unsupported types with a descriptive error — satisfies Req 3.2
+  - [x] 1.5.3 Implement size-limit validation in `upload`: images ≤ 20 MB, video ≤ 200 MB, audio ≤ 50 MB, PDF ≤ 50 MB; throw `AssetTooLargeError` with `maxBytes` and `actualBytes` on violation — satisfies Req 3.3
+  - [x] 1.5.4 On successful validation, upload file to Supabase Storage bucket `assets/${userId}/`; insert `AssetRecord` into `assets` table; return `Asset` with correct `mimeType`, `sizeBytes`, `userId` — satisfies Req 3.1
+  - [x] 1.5.5 Implement `getSignedUrl(assetId, expiresIn = 3600)`: call Supabase Storage `createSignedUrl`; verify returned URL is non-empty and TTL ≥ `expiresIn` — satisfies Req 3.4
+  - [x] 1.5.6 Implement `listAssets(userId, filter)`: query `assets` WHERE `user_id = userId`; apply filter predicates; never return another user's assets — satisfies Req 3.5, Req 3.8
+  - [x] 1.5.7 Implement `deleteAsset(assetId)`: remove file from Supabase Storage and DELETE row from `assets`; verify asset absent in subsequent `listAssets` — satisfies Req 3.6
+  - [x] 1.5.8 Implement `moveAsset(assetId, targetFolder)`: UPDATE `folder` column; return updated `Asset` — satisfies Req 3.7
+  - [x] 1.5.9 Write `AssetTooLargeError` and `UnsupportedMimeTypeError` classes with appropriate fields
+  - [x] 1.5.10 Write unit tests: supported upload succeeds, unsupported MIME rejected, oversized image rejected, signed URL non-empty, `listAssets` scoped to `userId`, `deleteAsset` removes from list
 
 
-- [ ] 2.1 GenAIService core generation
-  - [~] 2.1.1 Create `supabase/functions/_shared/gen-ai.service.ts` implementing the `GenAIService` interface
-  - [~] 2.1.2 Implement feature gate check at the top of `generateCopy`: call `billingService.checkFeatureAccess(userId, 'ai_generation')`; throw `FeatureGatedError` if false, without calling OpenRouter — satisfies Req 4.5
-  - [~] 2.1.3 Implement quota check in `generateCopy`: if `aiGenerationsThisMonth >= aiGenerationsLimit`, throw `QuotaExceededError` without calling OpenRouter — satisfies Req 4.4
-  - [~] 2.1.4 Implement OpenRouter call in `generateCopy`: build system prompt from `platform` + `tone`; call `openRouterClient.chatCompletions`; map response to `GeneratedCopy` with non-empty `content`, valid `platform`, and positive `tokensUsed` — satisfies Req 4.1
-  - [~] 2.1.5 After successful generation, persist content as an `Asset` record with `source = 'ai_generated'` and increment `ai_generations_this_month` by 1 — satisfies Req 4.8
-  - [~] 2.1.6 Implement `generateImage(request)`: call OpenRouter image generation endpoint; return `GeneratedImage` with non-empty `url` and original `prompt` preserved — satisfies Req 4.2
-  - [~] 2.1.7 Implement `brainstorm(request)`: call OpenRouter with `count = N`; parse response into exactly `N` content ideas; return `BrainstormResult` — satisfies Req 4.3
-  - [~] 2.1.8 Create `QuotaExceededError` and `FeatureGatedError` classes; export from the types barrel
-  - [~] 2.1.9 Write tests: pure unit tests verify quota/feature gates fire before any OpenRouter call; direct OpenRouter integration tests verify successful generation, returned structure, asset persistence with `ai_generated` source, and usage counter increment
+- [x] 2.1 GenAIService core generation
+  - [x] 2.1.1 Create `supabase/functions/_shared/gen-ai.service.ts` implementing the `GenAIService` interface
+  - [x] 2.1.2 Implement feature gate check at the top of `generateCopy`: call `billingService.checkFeatureAccess(userId, 'ai_generation')`; throw `FeatureGatedError` if false, without calling OpenRouter — satisfies Req 4.5
+  - [x] 2.1.3 Implement quota check in `generateCopy`: if `aiGenerationsThisMonth >= aiGenerationsLimit`, throw `QuotaExceededError` without calling OpenRouter — satisfies Req 4.4
+  - [x] 2.1.4 Implement OpenRouter call in `generateCopy`: build system prompt from `platform` + `tone`; call `openRouterClient.chatCompletions`; map response to `GeneratedCopy` with non-empty `content`, valid `platform`, and positive `tokensUsed` — satisfies Req 4.1
+  - [x] 2.1.5 After successful generation, persist content as an `Asset` record with `source = 'ai_generated'` and increment `ai_generations_this_month` by 1 — satisfies Req 4.8
+  - [x] 2.1.6 Implement `generateImage(request)`: call OpenRouter image generation endpoint; return `GeneratedImage` with non-empty `url` and original `prompt` preserved — satisfies Req 4.2
+  - [x] 2.1.7 Implement `brainstorm(request)`: call OpenRouter with `count = N`; parse response into exactly `N` content ideas; return `BrainstormResult` — satisfies Req 4.3
+  - [x] 2.1.8 Create `QuotaExceededError` and `FeatureGatedError` classes; export from the types barrel
+  - [x] 2.1.9 Write tests: pure unit tests verify quota/feature gates fire before any OpenRouter call; direct OpenRouter integration tests verify successful generation, returned structure, asset persistence with `ai_generated` source, and usage counter increment
 
-- [ ] 2.2 GenAIService streaming and regeneration
-  - [~] 2.2.1 Implement `streamGenerate(request, onChunk)`: open a streaming request to OpenRouter; invoke `onChunk` callback at least once per SSE token chunk with a non-empty string — satisfies Req 4.6
-  - [~] 2.2.2 Ensure `streamGenerate` applies the same feature gate and quota checks as `generateCopy` before initiating the stream
-  - [~] 2.2.3 Implement `regenerate(assetId, instructions?)`: load original asset from `AssetStorageService`; construct a new `CopyRequest` with optional instruction modifications; call `generateCopy` and return the new `GeneratedAsset` — satisfies Req 4.7
-  - [~] 2.2.4 Write unit tests: `streamGenerate` calls `onChunk` at least once with non-empty string; `regenerate` returns a new asset distinct from the original
-
-
-- [ ] 2.3 Property-based tests for AI generation
-  - [~] 2.3.1 Write property test for Feature Gate Consistency (Property 7): for any `userId` with a non-active subscription and any valid `Feature` value, `generateCopy` always throws `FeatureGatedError` before any OpenRouter call is made — **Validates: Requirement 4.5**
-  - [~] 2.3.2 Write property test for Quota Gate: for arbitrary `aiGenerationsThisMonth` values ≥ `aiGenerationsLimit`, `generateCopy` always throws `QuotaExceededError` without calling OpenRouter; verify no false positives when count is below limit — **Validates: Requirement 4.4**
-
-- [ ] 3.1 SocialMediaPublisher interface and publisher registry
-  - [~] 3.1.1 Create `supabase/functions/_shared/publisher/social-media-publisher.interface.ts` declaring the `SocialMediaPublisher` interface with methods: `publish`, `delete`, `edit`, `getCapabilities`, `validatePost` — satisfies Req 5.1
-  - [~] 3.1.2 Create `PublisherRegistry` class with `register(platform, publisher)` and `get(platform)` methods; ensure `SchedulingEngine` only interacts with `SocialMediaPublisher` interface, never concrete classes — satisfies Property 6
-  - [~] 3.1.3 Implement the `validatePost(post)` happy path: if `post.content.text` length ≤ `capabilities.maxTextLength` and `mediaType` is supported, return `{ valid: true, errors: [] }` — satisfies Req 5.2
-  - [~] 3.1.4 Implement the violation path of `validatePost`: if any constraint is violated, return `{ valid: false, errors: [descriptive message] }` — satisfies Req 5.3
-  - [~] 3.1.5 Implement the duplicate-publish guard: if `publish` is called on a post where `post.status === 'published'`, return `PublishResult` with `error.code === 'CONTENT_REJECTED'` without calling any platform API — satisfies Req 5.7
-  - [~] 3.1.6 Write unit tests: valid post returns `valid = true`; text-too-long returns `valid = false` with message; unsupported media returns `valid = false`; already-published post triggers `CONTENT_REJECTED`
+- [x] 2.2 GenAIService streaming and regeneration
+  - [x] 2.2.1 Implement `streamGenerate(request, onChunk)`: open a streaming request to OpenRouter; invoke `onChunk` callback at least once per SSE token chunk with a non-empty string — satisfies Req 4.6
+  - [x] 2.2.2 Ensure `streamGenerate` applies the same feature gate and quota checks as `generateCopy` before initiating the stream
+  - [x] 2.2.3 Implement `regenerate(assetId, instructions?)`: load original asset from `AssetStorageService`; construct a new `CopyRequest` with optional instruction modifications; call `generateCopy` and return the new `GeneratedAsset` — satisfies Req 4.7
+  - [x] 2.2.4 Write unit tests: `streamGenerate` calls `onChunk` at least once with non-empty string; `regenerate` returns a new asset distinct from the original
 
 
-- [ ] 3.2 TelegramPublisher implementation
-  - [~] 3.2.1 Create `supabase/functions/_shared/publisher/telegram.publisher.ts` implementing `SocialMediaPublisher` with `platform = 'telegram'`
-  - [~] 3.2.2 Implement `getCapabilities()`: return `PlatformCapabilities` with `maxTextLength: 4096`, `supportsImages: true`, `supportsVideo: true`, `supportsAudio: true`, `supportsPDFs: true`, `supportsCarousel: false`, `supportsScheduledEdit: false` — satisfies Req 5.8
-  - [~] 3.2.3 Implement `publish(post, channel)`: extract `telegram_bot_token` from `channel.credentials`; build `TelegramSendPayload` via private `buildPayload(post)`; make exactly one HTTP call to Telegram Bot API; return `PublishResult` with `success: true` and non-empty `platformMessageId` on success — satisfies Req 5.4
-  - [~] 3.2.4 Implement error mapping in `mapApiError(error)`: HTTP 5xx or network timeout → `{ code: 'NETWORK_ERROR', retryable: true }`; HTTP 401 → `{ code: 'INVALID_TOKEN', retryable: false }` — satisfies Req 5.5, Req 5.6
-  - [~] 3.2.5 Implement `buildPayload(post)`: select `sendMessage`, `sendPhoto`, `sendVideo`, `sendAudio`, or `sendDocument` based on `post.content.mediaType`; apply Telegram Markdown formatting
-  - [~] 3.2.6 Implement `delete` and `edit` via Telegram `deleteMessage` / `editMessageText` API endpoints
-  - [~] 3.2.7 Write tests: pure unit tests cover payload construction, error mapping helpers, and `getCapabilities`; direct Telegram Bot API integration tests against a private test channel verify success returns `platformMessageId`, invalid token maps to non-retryable 401, and retryable provider/network failures are handled correctly
+- [x] 2.3 Property-based tests for AI generation
+  - [x] 2.3.1 Write property test for Feature Gate Consistency (Property 7): for any `userId` with a non-active subscription and any valid `Feature` value, `generateCopy` always throws `FeatureGatedError` before any OpenRouter call is made — **Validates: Requirement 4.5**
+  - [x] 2.3.2 Write property test for Quota Gate: for arbitrary `aiGenerationsThisMonth` values ≥ `aiGenerationsLimit`, `generateCopy` always throws `QuotaExceededError` without calling OpenRouter; verify no false positives when count is below limit — **Validates: Requirement 4.4**
 
-- [ ] 3.3 SchedulingEngine core implementation
-  - [~] 3.3.1 Create `supabase/functions/scheduler/index.ts` as the cron Edge Function entry point; wire to `SchedulingEngine.tick()`
-  - [~] 3.3.2 Implement `schedulePost(request)`: validate `request.scheduledAt > now()` — reject with validation error if in past (satisfies Req 6.2); check feature access `scheduled_posts` — throw `FeatureGatedError` if denied (satisfies Req 6.3); validate `channelId` belongs to `userId`; persist `ScheduledPost` with `status = 'scheduled'`; assert `post.scheduledAt > post.createdAt` — satisfies Req 6.1, Req 6.4
-  - [~] 3.3.3 Implement `tick()` per Algorithm 1 in the design: query `scheduled_posts WHERE status='scheduled' AND scheduled_at <= now()` using `FOR UPDATE SKIP LOCKED` (satisfies Req 6.12); set status to `'publishing'` before dispatching (satisfies Req 13.3); call `validatePost` before `publisher.publish` (satisfies Req 6.7); build and return `DispatchSummary` asserting `processed === succeeded + failed + retryQueued` — satisfies Req 6.6
-  - [~] 3.3.4 Implement stale `publishing` post cleanup at start of `tick()`: reset any post stuck in `status = 'publishing'` for more than 5 minutes back to `status = 'scheduled'` — satisfies Req 13.4
-  - [~] 3.3.5 Implement `cancelPost(postId)`: validate `post.status === 'scheduled'`; update to `status = 'cancelled'` — satisfies Req 6.8
-  - [~] 3.3.6 Implement `reschedulePost(postId, newScheduledAt)`: validate `newScheduledAt > now()`; update `scheduledAt`; return updated `ScheduledPost` — satisfies Req 6.9
-  - [~] 3.3.7 Implement `getUpcomingPosts(userId, from, to)`: query `scheduled_posts` for `userId` with `scheduledAt BETWEEN from AND to` and `status = 'scheduled'`; enforce no cross-user leakage — satisfies Req 6.11, Req 12.4
-  - [~] 3.3.8 Implement post lifecycle status transition guard: once `status = 'published'` or `'failed'`, reject any further status update — satisfies Req 13.1, Req 13.2
-  - [~] 3.3.9 Write unit tests: `schedulePost` in past rejected; `schedulePost` future creates record; `tick` dispatches due posts and returns correct summary; `cancelPost` changes status; `getUpcomingPosts` scoped to `userId`; stale publishing posts reset to scheduled
+- [x] 3.1 SocialMediaPublisher interface and publisher registry
+  - [x] 3.1.1 Create `supabase/functions/_shared/publisher/social-media-publisher.interface.ts` declaring the `SocialMediaPublisher` interface with methods: `publish`, `delete`, `edit`, `getCapabilities`, `validatePost` — satisfies Req 5.1
+  - [x] 3.1.2 Create `PublisherRegistry` class with `register(platform, publisher)` and `get(platform)` methods; ensure `SchedulingEngine` only interacts with `SocialMediaPublisher` interface, never concrete classes — satisfies Property 6
+  - [x] 3.1.3 Implement the `validatePost(post)` happy path: if `post.content.text` length ≤ `capabilities.maxTextLength` and `mediaType` is supported, return `{ valid: true, errors: [] }` — satisfies Req 5.2
+  - [x] 3.1.4 Implement the violation path of `validatePost`: if any constraint is violated, return `{ valid: false, errors: [descriptive message] }` — satisfies Req 5.3
+  - [x] 3.1.5 Implement the duplicate-publish guard: if `publish` is called on a post where `post.status === 'published'`, return `PublishResult` with `error.code === 'CONTENT_REJECTED'` without calling any platform API — satisfies Req 5.7
+  - [x] 3.1.6 Write unit tests: valid post returns `valid = true`; text-too-long returns `valid = false` with message; unsupported media returns `valid = false`; already-published post triggers `CONTENT_REJECTED`
 
 
-- [ ] 3.4 SchedulingEngine recurrence support
-  - [~] 3.4.1 Implement `RecurrenceService.scheduleNext(post)`: compute next `scheduledAt` from `RecurrenceRule` (daily/weekly/monthly + interval + daysOfWeek); respect `endDate` and `maxOccurrences` — satisfies Req 6.10
-  - [~] 3.4.2 Wire `scheduleNext` into `tick()`: after a recurring post publishes successfully, call `scheduleNext` and INSERT the next instance with correct `scheduledAt` and `parentPostId` — satisfies Req 6.10
-  - [~] 3.4.3 Validate recurrence rule at `schedulePost` time: if `endDate` is provided, verify `endDate > scheduledAt`
-  - [~] 3.4.4 Write unit tests: daily recurrence computes correct next date; weekly recurrence skips to correct day-of-week; monthly recurrence handles month-boundary dates; `maxOccurrences` stops creating instances after limit
+- [x] 3.2 TelegramPublisher implementation
+  - [x] 3.2.1 Create `supabase/functions/_shared/publisher/telegram.publisher.ts` implementing `SocialMediaPublisher` with `platform = 'telegram'`
+  - [x] 3.2.2 Implement `getCapabilities()`: return `PlatformCapabilities` with `maxTextLength: 4096`, `supportsImages: true`, `supportsVideo: true`, `supportsAudio: true`, `supportsPDFs: true`, `supportsCarousel: false`, `supportsScheduledEdit: false` — satisfies Req 5.8
+  - [x] 3.2.3 Implement `publish(post, channel)`: extract `telegram_bot_token` from `channel.credentials`; build `TelegramSendPayload` via private `buildPayload(post)`; make exactly one HTTP call to Telegram Bot API; return `PublishResult` with `success: true` and non-empty `platformMessageId` on success — satisfies Req 5.4
+  - [x] 3.2.4 Implement error mapping in `mapApiError(error)`: HTTP 5xx or network timeout → `{ code: 'NETWORK_ERROR', retryable: true }`; HTTP 401 → `{ code: 'INVALID_TOKEN', retryable: false }` — satisfies Req 5.5, Req 5.6
+  - [x] 3.2.5 Implement `buildPayload(post)`: select `sendMessage`, `sendPhoto`, `sendVideo`, `sendAudio`, or `sendDocument` based on `post.content.mediaType`; apply Telegram Markdown formatting
+  - [x] 3.2.6 Implement `delete` and `edit` via Telegram `deleteMessage` / `editMessageText` API endpoints
+  - [x] 3.2.7 Write tests: pure unit tests cover payload construction, error mapping helpers, and `getCapabilities`; direct Telegram Bot API integration tests against a private test channel verify success returns `platformMessageId`, invalid token maps to non-retryable 401, and retryable provider/network failures are handled correctly
 
-- [ ] 3.5 RetryEngine implementation
-  - [~] 3.5.1 Create `supabase/functions/_shared/retry-engine.ts` implementing the `RetryEngine` interface
-  - [~] 3.5.2 Implement `enqueue(post, error)`: if `error.retryable === true` AND `post.retryCount < post.maxRetries`, update post to `status = 'retrying'`, increment `retryCount`, compute `next_retry_at` using the backoff formula — satisfies Req 7.1
-  - [~] 3.5.3 Handle exhaustion in `enqueue`: if `error.retryable === false` OR `post.retryCount >= post.maxRetries`, update post to `status = 'failed'` and call `alertService.notify(userId, 'retry_exhausted')` — satisfies Req 7.2
-  - [~] 3.5.4 Implement exponential backoff formula: `delay = MIN(1000 * (2 ^ retryCount), 300000)` plus up to 10% random jitter; set `next_retry_at = now + delay + jitter` — satisfies Req 7.3
-  - [~] 3.5.5 Implement `processQueue()` per Algorithm 2 in the design: query `WHERE status='retrying' AND next_retry_at <= now()` with `FOR UPDATE SKIP LOCKED`; re-dispatch via publisher; on success update to `published` and insert audit log; on failure re-enqueue or exhaust — satisfies Req 7.7, Req 7.8
-  - [~] 3.5.6 Enforce `retryCount` never exceeds `maxRetries`: add a guard assertion before every `retryCount` increment — satisfies Req 7.5
-  - [~] 3.5.7 Enforce `retryCount` never decreases: add a guard verifying new value ≥ current value before any write — satisfies Req 7.6
-  - [~] 3.5.8 Write unit tests: retryable error enqueues with incremented count; non-retryable error moves to failed; exhausted retries moves to failed with alert; successful retry sets status to published with audit entry
+- [x] 3.3 SchedulingEngine core implementation
+  - [x] 3.3.1 Create `supabase/functions/scheduler/index.ts` as the cron Edge Function entry point; wire to `SchedulingEngine.tick()`
+  - [x] 3.3.2 Implement `schedulePost(request)`: validate `request.scheduledAt > now()` — reject with validation error if in past (satisfies Req 6.2); check feature access `scheduled_posts` — throw `FeatureGatedError` if denied (satisfies Req 6.3); validate `channelId` belongs to `userId`; persist `ScheduledPost` with `status = 'scheduled'`; assert `post.scheduledAt > post.createdAt` — satisfies Req 6.1, Req 6.4
+  - [x] 3.3.3 Implement `tick()` per Algorithm 1 in the design: query `scheduled_posts WHERE status='scheduled' AND scheduled_at <= now()` using `FOR UPDATE SKIP LOCKED` (satisfies Req 6.12); set status to `'publishing'` before dispatching (satisfies Req 13.3); call `validatePost` before `publisher.publish` (satisfies Req 6.7); build and return `DispatchSummary` asserting `processed === succeeded + failed + retryQueued` — satisfies Req 6.6
+  - [x] 3.3.4 Implement stale `publishing` post cleanup at start of `tick()`: reset any post stuck in `status = 'publishing'` for more than 5 minutes back to `status = 'scheduled'` — satisfies Req 13.4
+  - [x] 3.3.5 Implement `cancelPost(postId)`: validate `post.status === 'scheduled'`; update to `status = 'cancelled'` — satisfies Req 6.8
+  - [x] 3.3.6 Implement `reschedulePost(postId, newScheduledAt)`: validate `newScheduledAt > now()`; update `scheduledAt`; return updated `ScheduledPost` — satisfies Req 6.9
+  - [x] 3.3.7 Implement `getUpcomingPosts(userId, from, to)`: query `scheduled_posts` for `userId` with `scheduledAt BETWEEN from AND to` and `status = 'scheduled'`; enforce no cross-user leakage — satisfies Req 6.11, Req 12.4
+  - [x] 3.3.8 Implement post lifecycle status transition guard: once `status = 'published'` or `'failed'`, reject any further status update — satisfies Req 13.1, Req 13.2
+  - [x] 3.3.9 Write unit tests: `schedulePost` in past rejected; `schedulePost` future creates record; `tick` dispatches due posts and returns correct summary; `cancelPost` changes status; `getUpcomingPosts` scoped to `userId`; stale publishing posts reset to scheduled
 
 
-- [ ] 3.6 Property-based tests for retry engine and scheduling
-  - [~] 3.6.1 Write property test for Retry Count Monotonicity (Property 2): for any arbitrary sequence of `enqueue` operations on a post, `retryCount` is non-decreasing across the sequence — **Validates: Requirement 7.6**
-  - [~] 3.6.2 Write property test for Max Retries Bound (Property 3): for arbitrary `maxRetries` in range [1, 10] and arbitrary sequence of failures up to length 20, `retryCount` never exceeds `maxRetries` — **Validates: Requirement 7.5**
-  - [~] 3.6.3 Write property test for Backoff Strictly Increasing (Property 10): for arbitrary `retryCount` values n in [0, 9], assert `delay(n+1) >= delay(n) * 0.9` allowing for up to 10% jitter overlap — **Validates: Requirement 7.3, Requirement 7.4**
-  - [~] 3.6.4 Write property test for Scheduled Time Invariant (Property 8): for arbitrary future `scheduledAt` timestamps passed to `schedulePost`, assert the returned post always satisfies `post.scheduledAt > post.createdAt` — **Validates: Requirement 6.4**
-  - [~] 3.6.5 Write property test for Publishing Idempotency (Property 1): for any `ScheduledPost` with `status === 'published'`, calling `publisher.publish(post, channel)` always returns `error.code === 'CONTENT_REJECTED'` — **Validates: Requirement 5.7**
+- [x] 3.4 SchedulingEngine recurrence support
+  - [x] 3.4.1 Implement `RecurrenceService.scheduleNext(post)`: compute next `scheduledAt` from `RecurrenceRule` (daily/weekly/monthly + interval + daysOfWeek); respect `endDate` and `maxOccurrences` — satisfies Req 6.10
+  - [x] 3.4.2 Wire `scheduleNext` into `tick()`: after a recurring post publishes successfully, call `scheduleNext` and INSERT the next instance with correct `scheduledAt` and `parentPostId` — satisfies Req 6.10
+  - [x] 3.4.3 Validate recurrence rule at `schedulePost` time: if `endDate` is provided, verify `endDate > scheduledAt`
+  - [x] 3.4.4 Write unit tests: daily recurrence computes correct next date; weekly recurrence skips to correct day-of-week; monthly recurrence handles month-boundary dates; `maxOccurrences` stops creating instances after limit
 
-- [ ] 3.7 BillingService and feature gating
-  - [~] 3.7.1 Create `supabase/functions/_shared/billing.service.ts` implementing the `BillingService` interface
-  - [~] 3.7.2 Implement `createCheckoutSession(userId, planId)`: look up or create Stripe customer for `userId`; call `stripe.checkout.sessions.create` with mapped price ID; return `CheckoutSession` with non-empty `url` — satisfies Req 10.1
-  - [~] 3.7.3 Implement `handleWebhookEvent(payload, signature)`: call `stripe.webhooks.constructEvent` to verify signature — reject without DB mutation if invalid (satisfies Req 10.4, Req 12.7); on `checkout.session.completed` update subscription to `active` (satisfies Req 10.2); on `invoice.payment_failed` update to `past_due` and pause pending posts — satisfies Req 10.3
-  - [~] 3.7.4 Implement `checkFeatureAccess(userId, feature)`: return `true` if `status IN ('active','trialing')` and plan includes `feature`; return `false` for `cancelled`, `past_due`, or missing subscription — satisfies Req 10.5, Req 10.6
-  - [~] 3.7.5 Define the plan × feature capability matrix as a constant: Starter (ai_generation, asset_storage, scheduled_posts), Professional (+ recurrence_rules, analytics), Agency (+ multiple_channels)
-  - [~] 3.7.6 Implement `getUsage(userId)`: return `UsageSummary` reading `postsThisMonth`, `storageUsedBytes`, `aiGenerationsThisMonth` from `subscriptions` table with plan limits — satisfies Req 10.8
-  - [~] 3.7.7 Implement `createPortalSession(userId)`: retrieve Stripe customer ID; call `stripe.billingPortal.sessions.create`; return portal URL — satisfies Req 10.9
-  - [~] 3.7.8 Write unit tests: checkout session returns URL; invalid webhook signature rejected; `payment_failed` updates to `past_due`; `checkFeatureAccess` returns false for cancelled subscription; correct feature matrix per plan
+- [x] 3.5 RetryEngine implementation
+  - [x] 3.5.1 Create `supabase/functions/_shared/retry-engine.ts` implementing the `RetryEngine` interface
+  - [x] 3.5.2 Implement `enqueue(post, error)`: if `error.retryable === true` AND `post.retryCount < post.maxRetries`, update post to `status = 'retrying'`, increment `retryCount`, compute `next_retry_at` using the backoff formula — satisfies Req 7.1
+  - [x] 3.5.3 Handle exhaustion in `enqueue`: if `error.retryable === false` OR `post.retryCount >= post.maxRetries`, update post to `status = 'failed'` and call `alertService.notify(userId, 'retry_exhausted')` — satisfies Req 7.2
+  - [x] 3.5.4 Implement exponential backoff formula: `delay = MIN(1000 * (2 ^ retryCount), 300000)` plus up to 10% random jitter; set `next_retry_at = now + delay + jitter` — satisfies Req 7.3
+  - [x] 3.5.5 Implement `processQueue()` per Algorithm 2 in the design: query `WHERE status='retrying' AND next_retry_at <= now()` with `FOR UPDATE SKIP LOCKED`; re-dispatch via publisher; on success update to `published` and insert audit log; on failure re-enqueue or exhaust — satisfies Req 7.7, Req 7.8
+  - [x] 3.5.6 Enforce `retryCount` never exceeds `maxRetries`: add a guard assertion before every `retryCount` increment — satisfies Req 7.5
+  - [x] 3.5.7 Enforce `retryCount` never decreases: add a guard verifying new value ≥ current value before any write — satisfies Req 7.6
+  - [x] 3.5.8 Write unit tests: retryable error enqueues with incremented count; non-retryable error moves to failed; exhausted retries moves to failed with alert; successful retry sets status to published with audit entry
+
+
+- [x] 3.6 Property-based tests for retry engine and scheduling
+  - [x] 3.6.1 Write property test for Retry Count Monotonicity (Property 2): for any arbitrary sequence of `enqueue` operations on a post, `retryCount` is non-decreasing across the sequence — **Validates: Requirement 7.6**
+  - [x] 3.6.2 Write property test for Max Retries Bound (Property 3): for arbitrary `maxRetries` in range [1, 10] and arbitrary sequence of failures up to length 20, `retryCount` never exceeds `maxRetries` — **Validates: Requirement 7.5**
+  - [x] 3.6.3 Write property test for Backoff Strictly Increasing (Property 10): for arbitrary `retryCount` values n in [0, 9], assert `delay(n+1) >= delay(n) * 0.9` allowing for up to 10% jitter overlap — **Validates: Requirement 7.3, Requirement 7.4**
+  - [x] 3.6.4 Write property test for Scheduled Time Invariant (Property 8): for arbitrary future `scheduledAt` timestamps passed to `schedulePost`, assert the returned post always satisfies `post.scheduledAt > post.createdAt` — **Validates: Requirement 6.4**
+  - [x] 3.6.5 Write property test for Publishing Idempotency (Property 1): for any `ScheduledPost` with `status === 'published'`, calling `publisher.publish(post, channel)` always returns `error.code === 'CONTENT_REJECTED'` — **Validates: Requirement 5.7**
+
+- [] 3.7 BillingService and feature gating
+  - [] 3.7.1 Create `supabase/functions/_shared/billing.service.ts` implementing the `BillingService` interface
+  - [] 3.7.2 Implement `createCheckoutSession(userId, planId)`: look up or create Stripe customer for `userId`; call `stripe.checkout.sessions.create` with mapped price ID; return `CheckoutSession` with non-empty `url` — satisfies Req 10.1
+  - [] 3.7.3 Implement `handleWebhookEvent(payload, signature)`: call `stripe.webhooks.constructEvent` to verify signature — reject without DB mutation if invalid (satisfies Req 10.4, Req 12.7); on `checkout.session.completed` update subscription to `active` (satisfies Req 10.2); on `invoice.payment_failed` update to `past_due` and pause pending posts — satisfies Req 10.3
+  - [] 3.7.4 Implement `checkFeatureAccess(userId, feature)`: return `true` if `status IN ('active','trialing')` and plan includes `feature`; return `false` for `cancelled`, `past_due`, or missing subscription — satisfies Req 10.5, Req 10.6
+  - [] 3.7.5 Define the plan × feature capability matrix as a constant: Starter (ai_generation, asset_storage, scheduled_posts), Professional (+ recurrence_rules, analytics), Agency (+ multiple_channels)
+  - [] 3.7.6 Implement `getUsage(userId)`: return `UsageSummary` reading `postsThisMonth`, `storageUsedBytes`, `aiGenerationsThisMonth` from `subscriptions` table with plan limits — satisfies Req 10.8
+  - [] 3.7.7 Implement `createPortalSession(userId)`: retrieve Stripe customer ID; call `stripe.billingPortal.sessions.create`; return portal URL — satisfies Req 10.9
+  - [] 3.7.8 Write unit tests: checkout session returns URL; invalid webhook signature rejected; `payment_failed` updates to `past_due`; `checkFeatureAccess` returns false for cancelled subscription; correct feature matrix per plan
 
 
 - [ ] 4.1 MetricsService implementation
@@ -318,45 +318,45 @@ This plan implements the DirectorAI full-stack content automation SaaS platform 
   - [~] 6.1.3 Implement Mini Editorial Calendar widget: 3-day lookahead using `SchedulingEngine.getUpcomingPosts`; show post blocks with status color coding
   - [~] 6.1.4 Implement system health indicators: last scheduler execution time; API connectivity status for Telegram and OpenRouter
 
-- [ ] 6.2 AI Studio view (`/studio`)
-  - [~] 6.2.1 Create `StudioComponent` with split-pane layout: left panel = prompt input, platform selector, tone selector, max length slider; right panel = generated output area
-  - [~] 6.2.2 Implement streaming output: call `GenAIService.streamGenerate`; render each `onChunk` token progressively in the output panel — satisfies Req 15.6
-  - [~] 6.2.3 Implement "Save to Assets" CTA: call `AssetStorageService.upload` with `source = 'ai_generated'`; display success toast
-  - [~] 6.2.4 Implement "Schedule Now" CTA: open scheduling modal pre-filled with generated content; call `SchedulingEngine.schedulePost`
-  - [~] 6.2.5 Implement Brainstorm mode: call `GenAIService.brainstorm`; render N idea cards; each expandable to full copy with "Use This" action
-  - [~] 6.2.6 Implement Image Generation tab: prompt input and aspect ratio selector; call `GenAIService.generateImage`; display result image
-  - [~] 6.2.7 Implement Usage Meter component: display `aiGenerationsThisMonth / aiGenerationsLimit` as a progress bar in the top-right corner — satisfies Req 15.5
+- [x] 6.2 AI Studio view (`/studio`)
+  - [x] 6.2.1 Create `StudioComponent` with split-pane layout: left panel = prompt input, platform selector, tone selector, max length slider; right panel = generated output area
+  - [x] 6.2.2 Implement streaming output: call `GenAIService.streamGenerate`; render each `onChunk` token progressively in the output panel — satisfies Req 15.6
+  - [x] 6.2.3 Implement "Save to Assets" CTA: call `AssetStorageService.upload` with `source = 'ai_generated'`; display success toast
+  - [x] 6.2.4 Implement "Schedule Now" CTA: open scheduling modal pre-filled with generated content; call `SchedulingEngine.schedulePost`
+  - [x] 6.2.5 Implement Brainstorm mode: call `GenAIService.brainstorm`; render N idea cards; each expandable to full copy with "Use This" action
+  - [x] 6.2.6 Implement Image Generation tab: prompt input and aspect ratio selector; call `GenAIService.generateImage`; display result image
+  - [x] 6.2.7 Implement Usage Meter component: display `aiGenerationsThisMonth / aiGenerationsLimit` as a progress bar in the top-right corner — satisfies Req 15.5
 
-- [ ] 6.3 Asset Repository view (`/assets`)
-  - [~] 6.3.1 Create `AssetsComponent` with file-manager layout: left sidebar with folder/tag filters; right area with grid/list toggle — satisfies Req 15.7
-  - [~] 6.3.2 Implement drag-and-drop upload zone using `@angular/cdk/drag-drop`; on drop call `AssetStorageService.upload`; show upload progress — satisfies Req 15.7
-  - [~] 6.3.3 Implement asset cards: thumbnail preview, filename, source badge (AI/Upload), creation date; grid and list display modes
-  - [~] 6.3.4 Implement multi-select: checkbox selection; bulk action toolbar with Delete and Move buttons — satisfies Req 15.7
-  - [~] 6.3.5 Implement preview modal: full-size preview with signed URL; download button
-  - [~] 6.3.6 Implement folder navigation and tag filtering calling `AssetStorageService.listAssets(userId, filter)`
+- [x] 6.3 Asset Repository view (`/assets`)
+  - [x] 6.3.1 Create `AssetsComponent` with file-manager layout: left sidebar with folder/tag filters; right area with grid/list toggle — satisfies Req 15.7
+  - [x] 6.3.2 Implement drag-and-drop upload zone using `@angular/cdk/drag-drop`; on drop call `AssetStorageService.upload`; show upload progress — satisfies Req 15.7
+  - [x] 6.3.3 Implement asset cards: thumbnail preview, filename, source badge (AI/Upload), creation date; grid and list display modes
+  - [x] 6.3.4 Implement multi-select: checkbox selection; bulk action toolbar with Delete and Move buttons — satisfies Req 15.7
+  - [x] 6.3.5 Implement preview modal: full-size preview with signed URL; download button
+  - [x] 6.3.6 Implement folder navigation and tag filtering calling `AssetStorageService.listAssets(userId, filter)`
 
 
-- [ ] 6.4 Editorial Calendar view (`/calendar`)
-  - [~] 6.4.1 Integrate `@fullcalendar/angular` with monthly and weekly view modes; load posts from `SchedulingEngine.getUpcomingPosts` — satisfies Req 14.1
-  - [~] 6.4.2 Implement drag-and-drop rescheduling: on drop call `SchedulingEngine.reschedulePost(postId, newScheduledAt)`; update calendar; display validation error if `newScheduledAt <= now()` — satisfies Req 14.2, Req 14.3
-  - [~] 6.4.3 Implement post click → side drawer: show `status`, `content` preview, `scheduledAt`, action buttons (Edit, Cancel, View Metrics) — satisfies Req 14.4
-  - [~] 6.4.4 Apply status-based color coding to post blocks using design token colors: `--color-live`, `--color-signal`, `--color-fault` — satisfies Req 14.5
-  - [~] 6.4.5 Implement "New Post" inline creation form with content input, channel selector, date/time picker, and optional recurrence rule configurator
+- [x] 6.4 Editorial Calendar view (`/calendar`)
+  - [x] 6.4.1 Integrate `@fullcalendar/angular` with monthly and weekly view modes; load posts from `SchedulingEngine.getUpcomingPosts` — satisfies Req 14.1
+  - [x] 6.4.2 Implement drag-and-drop rescheduling: on drop call `SchedulingEngine.reschedulePost(postId, newScheduledAt)`; update calendar; display validation error if `newScheduledAt <= now()` — satisfies Req 14.2, Req 14.3
+  - [x] 6.4.3 Implement post click → side drawer: show `status`, `content` preview, `scheduledAt`, action buttons (Edit, Cancel, View Metrics) — satisfies Req 14.4
+  - [x] 6.4.4 Apply status-based color coding to post blocks using design token colors: `--color-live`, `--color-signal`, `--color-fault` — satisfies Req 14.5
+  - [x] 6.4.5 Implement "New Post" inline creation form with content input, channel selector, date/time picker, and optional recurrence rule configurator
 
-- [ ] 6.5 Platform Metrics view (`/metrics`)
-  - [~] 6.5.1 Create `MetricsComponent` with platform tabs (Telegram) and per-channel dropdown calling `MetricsService.getChannelSummary`
-  - [~] 6.5.2 Implement Views Trend line chart using `chart.js` / `ng2-charts`; data from `MetricsService.getEngagementTrend(channelId, 'day')`
-  - [~] 6.5.3 Implement Engagement Rate bar chart; data from `getEngagementTrend(channelId, 'week')`
-  - [~] 6.5.4 Implement Top Posts table sorted by views descending; data from `getChannelSummary`
-  - [~] 6.5.5 Implement date range picker with presets: last 7 days, 30 days, 90 days, and custom range — satisfies Req 15.8
-  - [~] 6.5.6 Implement CSV export button: serialize current channel metrics to CSV and trigger browser download
+- [x] 6.5 Platform Metrics view (`/metrics`)
+  - [x] 6.5.1 Create `MetricsComponent` with platform tabs (Telegram) and per-channel dropdown calling `MetricsService.getChannelSummary`
+  - [x] 6.5.2 Implement Views Trend line chart using `chart.js` / `ng2-charts`; data from `MetricsService.getEngagementTrend(channelId, 'day')`
+  - [x] 6.5.3 Implement Engagement Rate bar chart; data from `getEngagementTrend(channelId, 'week')`
+  - [x] 6.5.4 Implement Top Posts table sorted by views descending; data from `getChannelSummary`
+  - [x] 6.5.5 Implement date range picker with presets: last 7 days, 30 days, 90 days, and custom range — satisfies Req 15.8
+  - [x] 6.5.6 Implement CSV export button: serialize current channel metrics to CSV and trigger browser download
 
-- [ ] 6.6 Automation Hub view (`/automation`)
-  - [~] 6.6.1 Create `AutomationComponent` with four sections: Recurrence Rules, Retry Rules, Activity Log, Failed Posts
-  - [~] 6.6.2 Implement Recurrence Rules manager: list active rules with frequency and next run time; enable/disable toggle; inline edit frequency
-  - [~] 6.6.3 Implement Retry Rules configuration: per-channel max retries input; backoff delay preview display
-  - [~] 6.6.4 Implement Activity Log: paginated table of `audit_log` entries with filters for status, date range, and platform
-  - [~] 6.6.5 Implement Failed Posts panel: list posts with `status = 'failed'`; inline "Re-publish" action calling `SchedulingEngine.reschedulePost`
+- [x] 6.6 Automation Hub view (`/automation`)
+  - [x] 6.6.1 Create `AutomationComponent` with four sections: Recurrence Rules, Retry Rules, Activity Log, Failed Posts
+  - [x] 6.6.2 Implement Recurrence Rules manager: list active rules with frequency and next run time; enable/disable toggle; inline edit frequency
+  - [x] 6.6.3 Implement Retry Rules configuration: per-channel max retries input; backoff delay preview display
+  - [x] 6.6.4 Implement Activity Log: paginated table of `audit_log` entries with filters for status, date range, and platform
+  - [x] 6.6.5 Implement Failed Posts panel: list posts with `status = 'failed'`; inline "Re-publish" action calling `SchedulingEngine.reschedulePost`
 
 - [ ] 6.7 Settings and Billing view (`/settings`)
   - [~] 6.7.1 Create `SettingsComponent` with four sub-sections: Profile, API Keys, Channels, Billing
@@ -366,23 +366,23 @@ This plan implements the DirectorAI full-stack content automation SaaS platform 
   - [~] 6.7.5 Implement Billing section: current plan badge; usage meters for `postsThisMonth`, `storageUsedBytes`, `aiGenerationsThisMonth`; "Manage Subscription" button calls `BillingService.createPortalSession`; "Upgrade" button calls `BillingService.createCheckoutSession`
 
 
-- [ ] 7.1 Full publish flow integration tests
-  - [~] 7.1.1 Set up hosted Supabase staging instance plus a real Telegram bot connected to a private test channel; no local DB, MSW, or mocked Telegram server is permitted
-  - [~] 7.1.2 Write integration test: create user → schedule post → run `tick()` → assert the real Telegram test channel received `sendMessage` → assert Supabase staging `status = 'published'` → assert `audit_log` record inserted — satisfies Req 11.1
-  - [~] 7.1.3 Write integration test using real provider/test credentials: invalid Telegram token path enters `failed`; retryable provider/network failure path enters `retrying`; successful retry publishes to the real Telegram test channel — validates full retry flow
-  - [~] 7.1.4 Write integration test: verify `post_published` notification created for post owner after successful publish — satisfies Req 9.2
-  - [~] 7.1.5 Write integration test: recurring post published → next instance created with `scheduledAt = original + interval` — satisfies Req 6.10
+- [x] 7.1 Full publish flow integration tests
+  - [x] 7.1.1 Set up hosted Supabase staging instance plus a real Telegram bot connected to a private test channel; no local DB, MSW, or mocked Telegram server is permitted
+  - [x] 7.1.2 Write integration test: create user → schedule post → run `tick()` → assert the real Telegram test channel received `sendMessage` → assert Supabase staging `status = 'published'` → assert `audit_log` record inserted — satisfies Req 11.1
+  - [x] 7.1.3 Write integration test using real provider/test credentials: invalid Telegram token path enters `failed`; retryable provider/network failure path enters `retrying`; successful retry publishes to the real Telegram test channel — validates full retry flow
+  - [x] 7.1.4 Write integration test: verify `post_published` notification created for post owner after successful publish — satisfies Req 9.2
+  - [x] 7.1.5 Write integration test: recurring post published → next instance created with `scheduledAt = original + interval` — satisfies Req 6.10
 
-- [ ] 7.2 Stripe webhook integration tests
-  - [~] 7.2.1 Write integration test: deliver a signed Stripe test-mode `checkout.session.completed` event to webhook handler → verify subscription updated to `active` with correct `planId` — satisfies Req 10.2
-  - [~] 7.2.2 Write integration test: deliver a signed Stripe test-mode `invoice.payment_failed` event → verify subscription updated to `past_due` and pending posts paused — satisfies Req 10.3
-  - [~] 7.2.3 Write integration test: send webhook with invalid signature → verify request rejected with no DB mutation — satisfies Req 10.4
+- [x] 7.2 Stripe webhook integration tests
+  - [x] 7.2.1 Write integration test: deliver a signed Stripe test-mode `checkout.session.completed` event to webhook handler → verify subscription updated to `active` with correct `planId` — satisfies Req 10.2
+  - [x] 7.2.2 Write integration test: deliver a signed Stripe test-mode `invoice.payment_failed` event → verify subscription updated to `past_due` and pending posts paused — satisfies Req 10.3
+  - [x] 7.2.3 Write integration test: send webhook with invalid signature → verify request rejected with no DB mutation — satisfies Req 10.4
 
-- [ ] 7.3 RLS enforcement integration tests
-  - [~] 7.3.1 Write test: user A creates an asset; user B calls `listAssets` → result must not contain user A's asset — satisfies Req 12.3
-  - [~] 7.3.2 Write test: user A schedules a post; user B calls `getUpcomingPosts` → result must not contain user A's post — satisfies Req 12.4
-  - [~] 7.3.3 Write test: attempt to UPDATE an `audit_log` row as `service_role` → operation rejected — satisfies Req 11.2
-  - [~] 7.3.4 Write test: unauthenticated request to any Edge Function endpoint → returns HTTP 401 before processing body — satisfies Req 12.5
+- [x] 7.3 RLS enforcement integration tests
+  - [x] 7.3.1 Write test: user A creates an asset; user B calls `listAssets` → result must not contain user A's asset — satisfies Req 12.3
+  - [x] 7.3.2 Write test: user A schedules a post; user B calls `getUpcomingPosts` → result must not contain user A's post — satisfies Req 12.4
+  - [x] 7.3.3 Write test: attempt to UPDATE an `audit_log` row as `service_role` → operation rejected — satisfies Req 11.2
+  - [x] 7.3.4 Write test: unauthenticated request to any Edge Function endpoint → returns HTTP 401 before processing body — satisfies Req 12.5
 
 - [ ] 7.4 End-to-end smoke tests
   - [~] 7.4.1 Set up Playwright E2E runner in `frontend/e2e/`; configure base URL for local dev server
