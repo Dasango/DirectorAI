@@ -106,11 +106,17 @@
           </div>
 
           <div appAnimatedGroup [staggerDelay]="0.05" [delay]="0.75" class="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
-            <div class="bg-foreground/10 rounded-[14px] border p-0.5">
-              <a routerLink="/auth/login" appButton size="lg" class="rounded-xl px-5 text-base">
-                <span class="text-nowrap">Empezar a Automatizar</span>
-              </a>
-            </div>
+            <a routerLink="/auth/login"
+               class="group relative flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-xl border border-primary bg-transparent px-8 py-3 text-base font-semibold text-primary transition-all duration-200 hover:bg-primary/10 hover:ring-2 hover:ring-primary hover:ring-offset-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background">
+              <span class="relative z-10 flex items-center gap-2">
+                Empezar a Automatizar
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 shrink-0 transition-transform duration-300 ease-in-out group-hover:translate-x-1">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              </span>
+              <div class="absolute -left-[75px] -top-[50px] z-0 h-[155px] w-8 rotate-[35deg] bg-white opacity-30 transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:left-[120%]"></div>
+            </a>
             <a href="#link" appButton size="lg" variant="ghost" class="h-10.5 rounded-xl px-5">
               <span class="text-nowrap">Solicitar una demo</span>
             </a>

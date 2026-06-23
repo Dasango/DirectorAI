@@ -48,8 +48,8 @@ a:not([appButton]) {
   text-decoration: none;
 }
 
-a:not([appButton]):hover {
-  text-decoration: underline;
+a:hover {
+  text-decoration: none;
 }
 
 button {
