@@ -67,7 +67,7 @@ export class GenAIServiceImpl implements GenAIService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
         messages
       })
     })
@@ -103,7 +103,7 @@ export class GenAIServiceImpl implements GenAIService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
         messages: [{ role: 'user', content: this.buildPrompt(request) }],
         stream: true
       })
@@ -141,7 +141,7 @@ export class GenAIServiceImpl implements GenAIService {
       id: asset.id,
       content,
       platform: request.platform,
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'meta-llama/llama-3.3-70b-instruct:free',
       tokensUsed: Math.ceil(content.length / 4), 
       createdAt: asset.createdAt
     }
@@ -198,7 +198,7 @@ export class GenAIServiceImpl implements GenAIService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
         messages: [{ role: 'user', content: `Brainstorm exactly ${request.count} ideas for ${request.platform} about ${request.topic}. Output strictly a JSON array of strings.` }]
       })
     })
