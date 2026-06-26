@@ -81,4 +81,12 @@ export class GenAiService {
     if (error) throw error;
     return data;
   }
+
+  async parseCampaign(request: any): Promise<any> {
+    const { data, error } = await this.supabase.functions.invoke('gen-ai-studio', {
+      body: { action: 'parseCampaign', payload: request }
+    });
+    if (error) throw error;
+    return data;
+  }
 }

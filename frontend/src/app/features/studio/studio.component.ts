@@ -20,6 +20,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
             <option value="copy">Social Media Copy</option>
             <option value="brainstorm">Brainstorm Ideas</option>
             <option value="image">Image Generation</option>
+            <option value="campaign">Campaign Automation</option>
           </select>
         </div>
 
@@ -182,7 +183,7 @@ export class StudioComponent implements OnInit {
   private genAiService = inject(GenAiService);
   private supabase = inject(SupabaseClient);
 
-  mode = signal<'copy' | 'brainstorm' | 'image'>('copy');
+  mode = signal<'copy' | 'brainstorm' | 'image' | 'campaign'>('copy');
   platform = signal<any>('twitter');
   tone = signal<any>('professional');
   prompt = signal('');
@@ -250,13 +251,22 @@ export class StudioComponent implements OnInit {
         if (result.error) {
           this.output.set('Error: ' + result.error);
         } else {
-          // Display the image using an HTML tag in the output if it was supported,
-          // but for now we'll just display the markdown or link to it
-          this.output.set(`[Image Generated](${result.url})\n\n(Note: OpenRouter does not support free image generation, so this may be a fallback or error)`);
+          this.output.set(`[Image Generated](${result.url})`);
         }
         
         this.isGenerating.set(false);
         this.usage.update(u => u + 1);
+      } else if (this.mode() === 'campaign') {
+        const result = await this.genAiService.parseCampaign({
+          userId: session?.user.id || '',
+          prompt: this.prompt(),
+          platform: this.platform()
+        });
+        
+        this.output.set(JSON.stringify(result.posts, null, 2));
+        this.isGenerating.set(false);
+        this.usage.update(u => u + 1);
+        (this as any).lastCampaignResult = result.posts;
       }
     } catch (err: any) {
       console.error(err);
@@ -265,8 +275,123 @@ export class StudioComponent implements OnInit {
     }
   }
 
-  saveToAssets() {
-    // call AssetStorageService
+  async saveToAssets() {
+    try {
+      this.isGenerating.set(true);
+      const { data: { session } } = await this.supabase.auth.getSession();
+      if (!session) return;
+      
+      let postsToSave = (this as any).lastCampaignResult || [];
+      if (this.mode() === 'image') {
+        const match = this.output().match(/\((https?:\/\/[^\)]+)\)/);
+        const url = match ? match[1] : 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800';
+        postsToSave = [{ imagePrompt: this.prompt(), imageUrl: url, offsetMinutes: 0 }];
+      } else if (this.mode() !== 'campaign' || postsToSave.length === 0) {
+        // If it's just a regular copy/brainstorm, mock a simple array
+        postsToSave = [{ text: this.output(), offsetMinutes: 0 }];
+      }
+      
+      // Ensure user profile exists
+      const { data: profile } = await this.supabase.from('users_profile').select('id').eq('id', session.user.id).maybeSingle();
+      if (!profile) {
+        await this.supabase.from('users_profile').insert({ id: session.user.id, email: session.user.email });
+      }
+
+      // Ensure channel exists
+      let { data: channel, error: selErr } = await this.supabase.from('channels').select('id').limit(1).maybeSingle();
+      if (!channel) {
+        const { data: newChannel, error: insErr } = await this.supabase.from('channels').insert({
+          user_id: session.user.id,
+          platform: this.platform() || 'telegram',
+          name: 'My Channel',
+          channel_identifier: '@test_stream',
+          is_active: true
+        }).select().single();
+        if (insErr) throw insErr;
+        channel = newChannel;
+      }
+
+      // Insert recurrence rule
+      const { data: rule, error: rErr } = await this.supabase.from('recurrence_rules').insert({
+        user_id: session.user.id,
+        frequency: 'daily',
+        interval: 1
+      }).select().single();
+      if (rErr) throw rErr;
+
+      for (const post of postsToSave) {
+        let assetIds: string[] = [];
+
+        // 1. Text Asset
+        if (post.text) {
+          const file = new Blob([post.text], { type: 'text/plain' });
+          const fileName = `generated-${Date.now()}-${Math.floor(Math.random()*1000)}.txt`;
+          const { data: uploadData, error: uploadErr } = await this.supabase.storage.from('assets').upload(`${session.user.id}/${fileName}`, file);
+          if (uploadErr) throw uploadErr;
+          
+          if (uploadData) {
+            const { data: assetData } = await this.supabase.from('assets').insert({
+              user_id: session.user.id,
+              filename: fileName,
+              mime_type: 'text/plain',
+              size_bytes: file.size,
+              storage_path: uploadData.path,
+              folder: '/',
+              tags: ['ai_generated'],
+              source: 'ai_generated'
+            }).select().single();
+            if (assetData) assetIds.push(assetData.id);
+          }
+        }
+
+        // 2. Image Asset
+        if (post.imagePrompt) {
+          try {
+            const imgRes = await fetch(post.imageUrl || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800');
+            const imgBlob = await imgRes.blob();
+            const imgName = `generated-img-${Date.now()}-${Math.floor(Math.random()*1000)}.jpg`;
+            const { data: imgUpload, error: imgUploadErr } = await this.supabase.storage.from('assets').upload(`${session.user.id}/${imgName}`, imgBlob);
+            if (imgUploadErr) throw imgUploadErr;
+            
+            if (imgUpload) {
+              const { data: imgAsset } = await this.supabase.from('assets').insert({
+                user_id: session.user.id,
+                filename: imgName,
+                mime_type: 'image/jpeg',
+                size_bytes: imgBlob.size,
+                storage_path: imgUpload.path,
+                folder: '/',
+                tags: ['ai_generated', 'image'],
+                source: 'ai_generated'
+              }).select().single();
+              if (imgAsset) assetIds.push(imgAsset.id);
+            }
+          } catch (e) {
+            console.error('Failed to save image asset', e);
+            throw e;
+          }
+        }
+
+        // 3. Schedule Post
+        const scheduledAt = new Date(Date.now() + (post.offsetMinutes || 0) * 60000);
+        await this.supabase.from('scheduled_posts').insert({
+          user_id: session.user.id,
+          channel_id: channel!.id,
+          text_content: post.text,
+          media_asset_ids: assetIds,
+          scheduled_at: scheduledAt.toISOString(),
+          status: 'scheduled',
+          recurrence_rule_id: rule.id
+        });
+      }
+
+      this.isGenerating.set(false);
+      alert('Assets and Schedules successfully saved to database!');
+    } catch (err: any) {
+      console.error(err);
+      this.isGenerating.set(false);
+      alert('Error saving to DB: ' + err.message);
+    }
   }
 
   scheduleNow() {
