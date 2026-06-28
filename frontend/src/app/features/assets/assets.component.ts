@@ -114,6 +114,10 @@ import { SupabaseClient } from '@supabase/supabase-js';
             <video *ngIf="previewAsset()?.type === 'video'" controls class="preview-media">
               <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
             </video>
+            <div *ngIf="previewAsset()?.type === 'document'" class="preview-text">
+              <p *ngIf="!previewAsset().textContent">Loading text content...</p>
+              <pre *ngIf="previewAsset().textContent">{{ previewAsset().textContent }}</pre>
+            </div>
             <div class="preview-details">
               <h3>{{ previewAsset().filename }}</h3>
               <p>{{ previewAsset().size }} • {{ previewAsset().source }}</p>
@@ -380,6 +384,19 @@ import { SupabaseClient } from '@supabase/supabase-js';
       object-fit: contain;
       background: black;
     }
+    .preview-text {
+      padding: 30px;
+      max-height: 60vh;
+      overflow-y: auto;
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+    .preview-text pre {
+      white-space: pre-wrap;
+      font-family: inherit;
+      margin: 0;
+      line-height: 1.5;
+    }
     .preview-details {
       padding: 20px;
       background: var(--color-ink);
@@ -428,9 +445,22 @@ export class AssetsComponent implements OnInit {
     this.activeFilter.set(filter);
   }
 
-  openPreview(asset: any) {
-    if (asset.type === 'image' || asset.type === 'video') {
-      this.previewAsset.set(asset);
+  async openPreview(asset: any) {
+    this.previewAsset.set(asset);
+    
+    if (asset.type === 'document' && !asset.textContent) {
+      try {
+        const { data: urlData } = await this.supabase.storage.from('assets').createSignedUrl(asset.storage_path, 60);
+        if (urlData?.signedUrl) {
+          const res = await fetch(urlData.signedUrl);
+          const text = await res.text();
+          this.previewAsset.set({ ...asset, textContent: text });
+        } else {
+          this.previewAsset.set({ ...asset, textContent: 'Could not generate text URL' });
+        }
+      } catch (e) {
+        this.previewAsset.set({ ...asset, textContent: 'Failed to load text content' });
+      }
     }
   }
 
@@ -438,7 +468,41 @@ export class AssetsComponent implements OnInit {
     this.previewAsset.set(null);
   }
 
-  async loadAssets() {}
+  async loadAssets() {
+    const { data: { session } } = await this.supabase.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await this.supabase
+      .from('assets')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error loading assets', error);
+      return;
+    }
+    
+    if (data) {
+      const mapped = await Promise.all(data.map(async (a: any) => {
+        let preview = null;
+        if (a.mime_type?.startsWith('image/')) {
+          const { data: urlData } = await this.supabase.storage.from('assets').createSignedUrl(a.storage_path, 3600);
+          preview = urlData?.signedUrl;
+        }
+        return {
+          id: a.id,
+          filename: a.filename,
+          type: a.mime_type?.startsWith('image/') ? 'image' : a.mime_type?.startsWith('video/') ? 'video' : 'document',
+          source: a.source,
+          size: (a.size_bytes / 1024).toFixed(1) + ' KB',
+          date: new Date(a.created_at),
+          storage_path: a.storage_path,
+          preview
+        };
+      }));
+      this.mockAssets.set(mapped);
+    }
+  }
 
   onFileDropped(event: CdkDragDrop<any>) {}
 
